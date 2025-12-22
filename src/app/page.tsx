@@ -13,7 +13,7 @@ export default function Home() {
           <div className="mt-8">
             <div className="flex justify-center">
                <a href="/dashboard">
-                <Button className="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg shadow-lg transition duration-300">
+                <Button className="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg shadow-lg transition duration-300 cursor-pointer">
                   Get Started
                   <ArrowRight className="ml-2 w-5 h-5" strokeWidth={3} />
                 </Button>

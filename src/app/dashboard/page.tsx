@@ -36,12 +36,14 @@ const DashboardPage = (props: Props) => {
 
                 <div className='text-center'></div>
                 <h2 className='text-xl text-gray-500'>You have no notes yet</h2>
-            </div>
 
-            {/* display all the notes */}
+                <div className="h-8"></div>
 
-            <div className="grid sm:grid-cols-3 md:grid-cols-5 grid-cols-1 gap-3">
-                <CreateNoteDialog />
+                {/* display all the notes */}
+
+                <div className="grid sm:grid-cols-3 md:grid-cols-5 grid-cols-1 gap-3">
+                    <CreateNoteDialog />
+                </div>
             </div>
         </div>
     </div>

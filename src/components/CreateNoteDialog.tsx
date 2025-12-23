@@ -47,7 +47,7 @@ const CreateNoteDialog = (props: Props) => {
             </Button>
             <Button
               type="submit"
-              className="bg-green-600"
+              className="bg-green-600 hover:bg-green-700 cursor-pointer"
             >
               Create
             </Button>

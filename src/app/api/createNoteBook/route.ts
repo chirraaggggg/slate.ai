@@ -25,11 +25,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Generate image prompt using Gemini
-    const imagePrompt = await generateImagePrompt(name);
-    
-    // Generate image using Pixabay
-    const imageUrl = await generateImage(imagePrompt);
+    let imageUrl: string | null = null;
+    try {
+      const imagePrompt = await generateImagePrompt(name);
+      imageUrl = await generateImage(imagePrompt);
+    } catch (error) {
+      console.error("Thumbnail generation failed, creating note without image:", error);
+    }
 
     // Create note in database
     const note = await db

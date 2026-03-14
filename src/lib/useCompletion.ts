@@ -31,18 +31,24 @@ export function useCompletion({ api = "/api/completion" }: UseCompletionOptions 
           throw new Error("Completion request failed");
         }
 
+        // If the API returns a stream, read it chunk by chunk.
         const reader = response.body?.getReader();
-        if (!reader) return;
-
-        const decoder = new TextDecoder();
-        let done = false;
-        while (!done) {
-          const { value, done: doneReading } = await reader.read();
-          done = doneReading;
-          if (value) {
-            setCompletion((prev) => prev + decoder.decode(value));
+        if (reader) {
+          const decoder = new TextDecoder();
+          let done = false;
+          while (!done) {
+            const { value, done: doneReading } = await reader.read();
+            done = doneReading;
+            if (value) {
+              setCompletion((prev) => prev + decoder.decode(value));
+            }
           }
+          return;
         }
+
+        // Fallback for non-streaming responses (plain text body)
+        const text = await response.text();
+        setCompletion(text);
       },
       [api]
     ),

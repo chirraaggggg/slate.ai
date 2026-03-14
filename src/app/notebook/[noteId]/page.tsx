@@ -11,22 +11,36 @@ import { redirect } from "next/navigation";
 import React from "react";
 
 type Props = {
-  params: {
+  params: Promise<{
     noteId: string;
-  };
+  }>;
 };
 
-const NotebookPage = async ({ params: { noteId } }: Props) => {
+const NotebookPage = async ({ params }: Props) => {
+  const { noteId } = await params;
   const { userId } = await auth();
   if (!userId) {
     return redirect("/dashboard");
   }
-  const user = await clerk.users.getUser(userId);
+
+  const parsedNoteId = Number.parseInt(noteId, 10);
+  if (Number.isNaN(parsedNoteId)) {
+    return redirect("/dashboard");
+  }
+
+  let userName: string | null = null;
+  try {
+    const user = await clerk.users.getUser(userId);
+    userName =
+      [user.firstName, user.lastName].filter(Boolean).join(" ").trim() || null;
+  } catch (error) {
+    console.error("Failed to load Clerk user; continuing without name", error);
+  }
   const notes = await db
     .select()
     .from(notesTable)
     .where(
-      and(eq(notesTable.id, parseInt(noteId)), eq(notesTable.userId, userId))
+      and(eq(notesTable.id, parsedNoteId), eq(notesTable.userId, userId))
     );
 
   if (notes.length != 1) {
@@ -44,9 +58,7 @@ const NotebookPage = async ({ params: { noteId } }: Props) => {
             </Button>
           </Link>
           <div className="w-3"></div>
-          <span className="font-semibold">
-            {user.firstName} {user.lastName}
-          </span>
+          {userName && <span className="font-semibold">{userName}</span>}
           <span className="inline-block mx-1">/</span>
           <span className="text-stone-500 font-semibold">{note.name}</span>
           <div className="ml-auto">

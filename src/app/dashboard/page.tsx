@@ -1,23 +1,22 @@
-import CreateNoteDialog from "@/components/CreateNoteDialog";
 import { Button } from "@/components/ui/button";
+import CreateNoteDialogClient from "@/components/CreateNoteDialogClient";
 import { Separator } from "@/components/ui/separator";
 import { db } from "@/lib/db";
 import { notesTable } from "@/lib/db/schema";
 import { auth } from "@clerk/nextjs/server";
+import { UserButton } from "@clerk/nextjs";
 import { eq } from "drizzle-orm";
 import { ArrowLeft } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
-type Props = {};
-
-const DashboardPage = async (props: Props) => {
-  const { userId } = auth();
+const DashboardPage = async () => {
+  const { userId } = await auth();
   const notes = await db
     .select()
-    .from($notes)
-    .where(eq($notes.userId, userId!));
+    .from(notesTable)
+    .where(eq(notesTable.userId, userId!));
 
   return (
     <>
@@ -52,17 +51,21 @@ const DashboardPage = async (props: Props) => {
 
           {/* display all the notes */}
           <div className="grid sm:grid-cols-3 md:grid-cols-5 grid-cols-1 gap-3">
-            <CreateNoteDialog />
+            <CreateNoteDialogClient />
             {notes.map((note) => {
               return (
-                <a href={`/notebook/${note.id}`} key={note.id}>
+                <Link href={`/notebook/${note.id}`} key={note.id}>
                   <div className="border border-stone-300 rounded-lg overflow-hidden flex flex-col hover:shadow-xl transition hover:-translate-y-1">
-                    <Image
-                      width={400}
-                      height={200}
-                      alt={note.name}
-                      src={note.imageUrl || ""}
-                    />
+                    {note.imageUrl ? (
+                      <Image
+                        width={400}
+                        height={200}
+                        alt={note.name}
+                        src={note.imageUrl}
+                      />
+                    ) : (
+                      <div className="w-full h-[200px] bg-stone-100" />
+                    )}
                     <div className="p-4">
                       <h3 className="text-xl font-semibold text-gray-900">
                         {note.name}
@@ -73,7 +76,7 @@ const DashboardPage = async (props: Props) => {
                       </p>
                     </div>
                   </div>
-                </a>
+                </Link>
               );
             })}
           </div>

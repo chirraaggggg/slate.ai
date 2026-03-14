@@ -11,4 +11,5 @@ export const notesTable = pgTable("notes", {
   editorState: text('editor_state'),
 });
 
-export type NoteType = typeof notesTable.$inferInsert;
+export type NoteType = typeof notesTable.$inferSelect;
+export type NoteInsertType = typeof notesTable.$inferInsert;

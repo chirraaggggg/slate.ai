@@ -49,6 +49,8 @@ const TipTapEditor = ({ note }: Props) => {
     onUpdate: ({ editor }) => {
       setEditorState(editor.getHTML());
     },
+    // Avoid SSR/hydration mismatches as recommended by TipTap
+    immediatelyRender: false,
   });
   const lastCompletion = React.useRef("");
 

@@ -1,16 +1,22 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
-
-if (!apiKey) {
-  throw new Error("NEXT_PUBLIC_GEMINI_API_KEY environment variable is not set");
+function getGeminiClient() {
+  const apiKey =
+    process.env.GEMINI_API_KEY ?? process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+  if (!apiKey) {
+    return null;
+  }
+  return new GoogleGenerativeAI(apiKey);
 }
-
-const genAI = new GoogleGenerativeAI(apiKey);
 
 export async function generateImagePrompt(name: string) {
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const genAI = getGeminiClient();
+    if (!genAI) {
+      return `Minimal flat illustration for notebook titled ${name}`;
+    }
+
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const prompt = `You are a creative and helpful AI assistant capable of generating interesting thumbnail descriptions for notes. Your output will be fed into an image generation API to generate a thumbnail. The description should be minimalistic and flat styled. 
 
@@ -21,8 +27,8 @@ Please generate a concise thumbnail description (1-2 sentences) for a notebook t
     
     return image_description as string;
   } catch (error) {
-    console.log(error);
-    throw error;
+    console.error("Error generating image prompt:", error);
+    return `Minimal flat illustration for notebook titled ${name}`;
   }
 }
 
@@ -31,7 +37,7 @@ export async function generateImage(image_description: string) {
     const pixabayApiKey = process.env.NEXT_PUBLIC_PIXABAY_API_KEY;
     
     if (!pixabayApiKey) {
-      throw new Error("Pixabay API key not found in environment variables");
+      return null;
     }
 
     // Use the image description as search query
@@ -52,6 +58,6 @@ export async function generateImage(image_description: string) {
     }
   } catch (error) {
     console.error("Error generating image:", error);
-    throw error;
+    return null;
   }
 }

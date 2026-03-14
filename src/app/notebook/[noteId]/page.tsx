@@ -3,8 +3,8 @@ import TipTapEditor from "@/components/TipTapEditor";
 import { Button } from "@/components/ui/button";
 import { clerk } from "@/lib/clerk-server";
 import { db } from "@/lib/db";
-import { $notes } from "@/lib/db/schema";
-import { auth } from "@clerk/nextjs";
+import { notesTable } from "@/lib/db/schema";
+import { auth } from "@clerk/nextjs/server";
 import { and, eq } from "drizzle-orm";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -24,8 +24,10 @@ const NotebookPage = async ({ params: { noteId } }: Props) => {
   const user = await clerk.users.getUser(userId);
   const notes = await db
     .select()
-    .from($notes)
-    .where(and(eq($notes.id, parseInt(noteId)), eq($notes.userId, userId)));
+    .from(notesTable)
+    .where(
+      and(eq(notesTable.id, parseInt(noteId)), eq(notesTable.userId, userId))
+    );
 
   if (notes.length != 1) {
     return redirect("/dashboard");

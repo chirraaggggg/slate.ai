@@ -2,14 +2,14 @@
 import React from "react";
 import { EditorContent, useEditor } from "@tiptap/react";
 import { StarterKit } from "@tiptap/starter-kit";
-import TipTapMenuBar from "./TipTapMenuBar";
+import TipTapMenuBar from "@/components/TipTapMenuBar";
 import { Button } from "./ui/button";
 import { useDebounce } from "@/lib/useDebounce";
 import { useMutation } from "@tanstack/react-query";
 import Text from "@tiptap/extension-text";
 import axios from "axios";
 import { NoteType } from "@/lib/db/schema";
-import { useCompletion } from "ai/react";
+import { useCompletion } from "@/lib/useCompletion";
 
 type Props = { note: NoteType };
 
@@ -77,7 +77,7 @@ const TipTapEditor = ({ note }: Props) => {
       <div className="flex">
         {editor && <TipTapMenuBar editor={editor} />}
         <Button disabled variant={"outline"}>
-          {saveNote.isLoading ? "Saving..." : "Saved"}
+          {saveNote.isPending ? "Saving..." : "Saved"}
         </Button>
       </div>
 
